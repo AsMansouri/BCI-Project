@@ -101,10 +101,21 @@ Regions.Labels = {'Frontal';'Centro-Parietal';'Occipital'};
 % 3) Occipital bin (average o elec).
 
 %% Outputs 
+NumHighRankedFeatures = 64;
+NumIterations = 10;
+FSType = 2;     % FSType: 1=fscmrmr 2=fscchi2 3=fsrftest ; 
+                %         otherwise (e.g 0)=all features
+    
+KFoldsss = [2, 5, 10];
+for FSType = 1:3
+    for Kfo = 1:3
+%         Kfolds = 2;     % Number of K in K-fold crossvalidation
+           Kfolds = KFoldsss(Kfo);
+           
+% XLNameAmp = ['Results-BCI-ERPs-',datestr(now,'HH-MM-SS'),'-Amplitudes.xlsx'];
+% XLNameLat = ['Results-BCI-ERPs-',datestr(now,'HH-MM-SS'),'-Latency.xlsx'];
 
-XLNameAmp = ['Results-BCI-ERPs-',datestr(now,'HH-MM-SS'),'-Amplitudes.xlsx'];
-XLNameLat = ['Results-BCI-ERPs-',datestr(now,'HH-MM-SS'),'-Latency.xlsx'];
-
+XLOutputName = ['Results\Results_SelectedFeatures_K',num2str(Kfolds),'_FS',num2str(FSType),'_',datestr(now,'HH-MM-SS'),'.xlsx'];
 %% Excel of ERPs per sheet for all electrodes
 
 XLLine = 1;
@@ -161,16 +172,49 @@ for pt = 1:20
 
           %% Unbalanced Dataset 
         %%--Feature selection
-        clc;
+%         clc;
+%         BalancedDataset = 0;
+% 
+%         fprintf('UnBalanced Datasets : \n');
+% 
+%         %SVM
+%         ACCs = [];
+%         Kappas = [];
+% 
+%         for i = 1:NumIterations
+%         [Accuracies, Kappa, CMs] = KfoldSVMFS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
+%     %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
+%             ACCs = [ACCs Accuracies];
+%             Kappas = [Kappas Kappa];
+%         end
+%         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
+% 
+%         ACCs_str = split(cellstr(num2str(ACCs)))';
+%         tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
+%                   num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
+%         xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'SVM-UnBal', ['A' num2str(XLLine)]);
+% 
+%         %LDA
+%         ACCs = [];
+%         Kappas = [];
+% 
+%         for i = 1:NumIterations
+%         [Accuracies, Kappa, CMs] = KfoldLDAS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
+%     %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
+%             ACCs = [ACCs Accuracies];
+%             Kappas = [Kappas Kappa];
+%         end
+%         fprintf('Average LDA crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
+% 
+%         ACCs_str = split(cellstr(num2str(ACCs)))';
+%         tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
+%                   num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
+%         xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'LDA-UnBal', ['A' num2str(XLLine)]);
 
-        NumHighRankedFeatures = 64;
-        FSType = 2;     % FSType: 1=fscmrmr 2=fscchi2 3=fsrftest ; 
-                        %         otherwise (e.g 0)=all features
-        Kfolds = 2;
-        NumIterations = 10;
-        BalancedDataset = 0;
+        %% Balanced
+        BalancedDataset = 1;
 
-        fprintf('UnBalanced Datasets : \n');
+        fprintf('Balanced Datasets : \n');
 
         %SVM
         ACCs = [];
@@ -187,7 +231,7 @@ for pt = 1:20
         ACCs_str = split(cellstr(num2str(ACCs)))';
         tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
                   num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
-        xlswrite('Results\Results_SelectedFeatures.xlsx',[tmpRes,ACCs_str] , 'SVM-UnBal', ['A' num2str(XLLine)]);
+        xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'SVM-Bal', ['A' num2str(XLLine)]);
 
         %LDA
         ACCs = [];
@@ -204,60 +248,21 @@ for pt = 1:20
         ACCs_str = split(cellstr(num2str(ACCs)))';
         tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
                   num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
-        xlswrite('Results\Results_SelectedFeatures.xlsx',[tmpRes,ACCs_str] , 'LDA-UnBal', ['A' num2str(XLLine)]);
-
-        %% Balanced
-        BalancedDataset = 1;
-
-        fprintf('Balanced Datasets : \n');
-
-        %SVM
-        ACCs = [];
-        Kappas = [];
-
-        for i = 1:NumIterations
-        [Accuracies, Kappas, CMs] = KfoldSVMFS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
-    %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
-            ACCs = [ACCs Accuracies];
-            Kappas = [Kappas Kappa];
-        end
-        fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
-
-        ACCs_str = split(cellstr(num2str(ACCs)))';
-        tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
-                  num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
-        xlswrite('Results\Results_SelectedFeatures.xlsx',[tmpRes,ACCs_str] , 'SVM-Bal', ['A' num2str(XLLine)]);
-
-        %LDA
-        ACCs = [];
-        Kappas = [];
-
-        for i = 1:NumIterations
-        [Accuracies, Kappas, CMs] = KfoldLDAS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
-    %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
-            ACCs = [ACCs Accuracies];
-            Kappas = [Kappas Kappa];
-        end
-        fprintf('Average LDA crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
-
-        ACCs_str = split(cellstr(num2str(ACCs)))';
-        tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
-                  num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
-        xlswrite('Results\Results_SelectedFeatures.xlsx',[tmpRes,ACCs_str] , 'LDA-Bal', ['A' num2str(XLLine)]);
+        xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'LDA-Bal', ['A' num2str(XLLine)]);
 
         
         
         %% Unbalanced Dataset-----RawEpoch
         %%--Feature selection
-        clc;
-
-        NumHighRankedFeatures = 64;
-        FSType = 0;     % FSType: 1=fscmrmr 2=fscchi2 3=fsrftest ; 
-                        %         otherwise (e.g 0)=all features
-        Kfolds = 2;
-        NumIterations = 10;
-        BalancedDataset = 0;
-
+%         clc;
+% 
+%         NumHighRankedFeatures = 64;
+%         FSType = 0;     % FSType: 1=fscmrmr 2=fscchi2 3=fsrftest ; 
+%                         %         otherwise (e.g 0)=all features
+%         Kfolds = 5;
+%         NumIterations = 10;
+%         BalancedDataset = 0;
+% 
 %         fprintf('UnBalanced Datasets- Raw Epochs: \n');
 % 
 %         %SVM
@@ -435,6 +440,8 @@ for pt = 1:20
 
 end
 
+    end
+end
 % for f = 1:length(ERPs.Tags)
 % %     for Elec = 1:32
 % 
@@ -1384,19 +1391,20 @@ function [Accuracies, Kappas, CMs] = KfoldLDAS5FoldTraining (Dataset,Labels,Kfol
                 NumHighRankedFeatures = size(Dataset,2);
         end
         tmpTrainACC = [];
-        for ft = 1:NumHighRankedFeatures
+        for ft = 1:length(idx)
             MdlLinear = fitcdiscr(Dataset(train,idx(1:ft)),Labels(train,:));
             Labels_Predict = predict(MdlLinear,Dataset(train,idx(1:ft)));
             acc = 1 - (sum(abs(Labels(train,:)-Labels_Predict))/length(Labels(train,:)));
             tmpTrainACC(ft) = acc;
         end
-        [~,ii] = max(tmpTrainACC);
-        NumHighRankedFeatures = ii;
+%         [~,ii] = max(tmpTrainACC);
+%         NumHighRankedFeatures = ii;
+        DifftmpTrainACC = diff(tmpTrainACC);
+        idx(find(DifftmpTrainACC<=0)+1) = [];
+%         MdlLinear = fitclinear(Dataset(train,idx(1:NumHighRankedFeatures)),Labels(train,:));
+        MdlLinear = fitcdiscr(Dataset(train,idx),Labels(train,:));
         
-        MdlLinear = fitcdiscr(Dataset(train,idx(1:NumHighRankedFeatures)),Labels(train,:));
-%         'linear' 'diaglinear' 'pseudolinear'
-
-        Labels_Predict = predict(MdlLinear,Dataset(test,idx(1:NumHighRankedFeatures)));
+        Labels_Predict = predict(MdlLinear,Dataset(test,idx));
 
         acc = 1 - (sum(abs(Labels(test,:)-Labels_Predict))/length(Labels(test,:)));
         [CM,order] = confusionmat(Labels(test,:),Labels_Predict,'Order',[0 1]);
@@ -1508,18 +1516,20 @@ function [Accuracies, Kappas, CMs] = KfoldSVMFS5FoldTraining (Dataset,Labels,Kfo
         end
         
         tmpTrainACC = [];
-        for ft = 1:NumHighRankedFeatures
+        for ft = 1:length(idx)
             MdlLinear = fitclinear(Dataset(train,idx(1:ft)),Labels(train,:));
             Labels_Predict = predict(MdlLinear,Dataset(train,idx(1:ft)));
             acc = 1 - (sum(abs(Labels(train,:)-Labels_Predict))/length(Labels(train,:)));
             tmpTrainACC(ft) = acc;
         end
-        [~,ii] = max(tmpTrainACC);
-        NumHighRankedFeatures = ii;
+%         [~,ii] = max(tmpTrainACC);
+%         NumHighRankedFeatures = ii;
+        DifftmpTrainACC = diff(tmpTrainACC);
+        idx(find(DifftmpTrainACC<=0)+1) = [];
+%         MdlLinear = fitclinear(Dataset(train,idx(1:NumHighRankedFeatures)),Labels(train,:));
+        MdlLinear = fitclinear(Dataset(train,idx),Labels(train,:));
         
-        MdlLinear = fitclinear(Dataset(train,idx(1:NumHighRankedFeatures)),Labels(train,:));
-
-        Labels_Predict = predict(MdlLinear,Dataset(test,idx(1:NumHighRankedFeatures)));
+        Labels_Predict = predict(MdlLinear,Dataset(test,idx));
 
         acc = 1 - (sum(abs(Labels(test,:)-Labels_Predict))/length(Labels(test,:)));
         [CM,order] = confusionmat(Labels(test,:),Labels_Predict,'Order',[0 1]);

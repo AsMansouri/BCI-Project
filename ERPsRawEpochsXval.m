@@ -159,7 +159,7 @@ for pt = 1:20
         NumHighRankedFeatures = 64;
         FSType = 0;     % FSType: 1=fscmrmr 2=fscchi2 3=fsrftest ; 
                         %         otherwise (e.g 0)=all features
-        Kfolds = 2;
+        Kfolds = 5;
         NumIterations = 10;
         BalancedDataset = 0;
 
