@@ -172,44 +172,44 @@ for pt = 1:20
 
           %% Unbalanced Dataset 
         %%--Feature selection
-%         clc;
-%         BalancedDataset = 0;
-% 
-%         fprintf('UnBalanced Datasets : \n');
-% 
-%         %SVM
-%         ACCs = [];
-%         Kappas = [];
-% 
-%         for i = 1:NumIterations
-%         [Accuracies, Kappa, CMs] = KfoldSVMFS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
-%     %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
-%             ACCs = [ACCs Accuracies];
-%             Kappas = [Kappas Kappa];
-%         end
-%         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
-% 
-%         ACCs_str = split(cellstr(num2str(ACCs)))';
-%         tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
-%                   num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
-%         xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'SVM-UnBal', ['A' num2str(XLLine)]);
-% 
-%         %LDA
-%         ACCs = [];
-%         Kappas = [];
-% 
-%         for i = 1:NumIterations
-%         [Accuracies, Kappa, CMs] = KfoldLDAS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
-%     %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
-%             ACCs = [ACCs Accuracies];
-%             Kappas = [Kappas Kappa];
-%         end
-%         fprintf('Average LDA crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
-% 
-%         ACCs_str = split(cellstr(num2str(ACCs)))';
-%         tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
-%                   num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
-%         xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'LDA-UnBal', ['A' num2str(XLLine)]);
+        clc;
+        BalancedDataset = 0;
+
+        fprintf('UnBalanced Datasets : \n');
+
+        %SVM
+        ACCs = [];
+        Kappas = [];
+
+        for i = 1:NumIterations
+        [Accuracies, Kappa, CMs] = KfoldSVMFS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
+    %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
+            ACCs = [ACCs Accuracies];
+            Kappas = [Kappas Kappa];
+        end
+        fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
+
+        ACCs_str = split(cellstr(num2str(ACCs)))';
+        tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
+                  num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
+        xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'SVM-UnBal', ['A' num2str(XLLine)]);
+
+        %LDA
+        ACCs = [];
+        Kappas = [];
+
+        for i = 1:NumIterations
+        [Accuracies, Kappa, CMs] = KfoldLDAS5FoldTraining (Paradigms(o).SelectedFeatures,Paradigms(o).SegmentsLabels,Kfolds,NumHighRankedFeatures,FSType,BalancedDataset);
+    %         fprintf('Average SVM crossvalidation accuracies = %.2f \n',mean(Accuracies)*100);
+            ACCs = [ACCs Accuracies];
+            Kappas = [Kappas Kappa];
+        end
+        fprintf('Average LDA crossvalidation accuracies = %.2f \n',mean(ACCs)*100);
+
+        ACCs_str = split(cellstr(num2str(ACCs)))';
+        tmpRes = {['Pt_' num2str(pt)] , Paradigms(o).Tag , num2str(mean(ACCs)*100) , ...
+                  num2str(std(ACCs)*100), num2str(min(ACCs(:))*100), num2str(max(ACCs(:))*100)};
+        xlswrite(XLOutputName,[tmpRes,ACCs_str] , 'LDA-UnBal', ['A' num2str(XLLine)]);
 
         %% Balanced
         BalancedDataset = 1;
